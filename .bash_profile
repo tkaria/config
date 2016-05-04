@@ -6,51 +6,32 @@ if [ -f ~/.bashrc ]; then
 fi
 
 # User specific environment and startup programs
-
 PATH=$PATH:$HOME/bin
-JAVAWS=/usr/local/java/
-Q=~/q/l32
-PATH=$PATH:$JAVAWS:$Q
 
-JAVA_HOME=/usr/local/java/
-
-PATH=$JAVA_HOME/bin:$PATH
-
-export JAVA_HOME
-
-# svn vars
-export SVN_EDITOR=/usr/bin/vim
-
-# git vars
+# Git vars
 export GIT_EDITOR=/usr/bin/vim
 
-
-alias gotest='cd ~/capitalk/timir'
-alias gotick='cd /mnt/raid/tickdata'
-alias maek=make
+# Aliases
+alias ll='ls -lv --group-directories-first'
+alias maek='make'
 alias h='history'
 alias p='pushd'
 alias lcd='popd'
+alias rm='rm -i'
+alias mkdir='mkdir -p'
+alias j='jobs -l'
+alias du='du -kh'
+alias df='df -kTh'
+alias tree='tree -Csuh'
 
-# Added by Sean
-SSH_ENV="$HOME/.ssh/environment"
-
+# SSH settings
+#SSH_ENV="$HOME/.ssh/environment"
 SSHAGENT=/usr/bin/ssh-agent
 SSHAGENTARGS="-s"
 if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
 	eval `$SSHAGENT $SSHAGENTARGS`
 	trap "kill $SSH_AGENT_PID" 0
 fi
-
-function wtitle {
-if [ "$TERM" == "xterm" ] ; then
-# Remove the old title string in the PS1, if one is already set.
-PS1=`echo $PS1 | sed -r 's/^\\\\\[.+\\\\\]//g'`
-export PS1="\[\033]0;$1 - \u@\h:\w\007\]$PS1 "
-else
-echo "You are not working in xterm. I cannot set the title."
-fi
-}
 
 function start_agent {
      echo "Initialising new SSH agent..."
@@ -73,38 +54,61 @@ else
      start_agent;
 fi
 
-# Source setup for intel compiler suite
-source /opt/intel/bin/compilervars.sh intel64
+# Functions
+function wtitle {
+    if [ "$TERM" == "xterm" ] ; then
+    # Remove the old title string in the PS1, if one is already set.
+    PS1=`echo $PS1 | sed -r 's/^\\\\\[.+\\\\\]//g'`
+    export PS1="\[\033]0;$1 - \u@\h:\w\007\]$PS1 "
+    else
+    echo "You are not working in xterm. I cannot set the title."
+    fi
+}
 
-# AWS Information 
-export EC2_HOME=~/bin/ec2-api-tools-1.6.8.0/
-export PATH=$PATH:$EC2_HOME/bin:$EC2_HOME
-# for orderbook
-#export EC2_PRIVATE_KEY=pk-APKAIV7W7WYA2X7MTDDA.pem
-#export EC2_CERT=awsorder_book.pem
-# for capk
-#export CAPK_EC2_PRIVATE_KEY=
-#export CAPK_EC2_CERT=capk.pem
-# for Boto
-export AWS_ACCESS_KEY_ID=AKIAITZSJIMPWRM54I4Q
-export AWS_SECRET_ACCESS_KEY=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
 
-# Local binaries
-export PATH=$PATH:/home/timir/bin
 
-# added by Sean Rolinson (see: /etc/skel/.bash_profile)
-PATH=$PATH:$HOME/bin:/usr/local/numpy/bin:/usr/local/ipython/bin
-PYTHONPATH=/usr/local/lib/python2.7/site-packages
+# Adds some text in the terminal frame (if applicable).
+function xtitle()
+{
+    case "$TERM" in
+    *term* | rxvt)
+        echo -en  "\e]0;$*\a" ;;
+    *)  ;;
+    esac
+}
 
-#/usr/local/scipy/lib64/python2.6/site-packages:/usr/local/ipython/lib/python2.6/site-packages:/usr/local/matplotlib/lib64/python2.6/site-packages:/usr/local/lib64/:/usr/lib64/python2.6/lib-dynload/:/usr/lib64/python2.6/site-packages/matplotlib/backends/
 
-#LD_LIBRARY_PATH=/usr/local/atlas/lib:$LD_LIBRARY_PATH:/usr/local/lib64:/usr/local/lib
-#LD_LIBRARY_PATH=/usr/local/lib/:/opt/wx/2.8/lib/:/usr/local/lib64:/usr/local/lib64/mysql:$LD_LIBRARY_PATH
-LD_LIBRARY_PATH=/usr/local/lib64/mysql:$LD_LIBRARY_PATH
-#PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/:/usr/local/ipython/lib/python2.6/site-packages/
+# Find a file with a pattern in name:
+function ff() { find . -type f -iname '*'"$*"'*' -ls ; }
 
-# Note that PANTHEIOS logger relies on STLPORT 
-export PANTHEIOS_ROOT=/opt/src/pantheios
-export STLSOFT=/opt/src/stlsoft
-export PATH PYTHONPATH LD_LIBRARY_PATH
+# Find a file with pattern $1 in name and Execute $2 on it:
+function fe() { find . -type f -iname '*'"${1:-}"'*' \
+-exec ${2:-file} {} \;  ; }
+
+#  Find a pattern in a set of files and highlight them:
+#+ (needs a recent version of egrep).
+function fstr()
+{
+    OPTIND=1
+    local mycase=""
+    local usage="fstr: find string in files.
+Usage: fstr [-i] \"pattern\" [\"filename pattern\"] "
+    while getopts :it opt
+    do
+        case "$opt" in
+           i) mycase="-i " ;;
+           *) echo "$usage"; return ;;
+        esac
+    done
+    shift $(( $OPTIND - 1 ))
+    if [ "$#" -lt 1 ]; then
+        echo "$usage"
+        return;
+    fi
+    find . -type f -name "${2:-*}" -print0 | \
+xargs -0 egrep --color=always -sn ${case} "$1" 2>&- | more
+
+}
+
+set filec
 umask 0002

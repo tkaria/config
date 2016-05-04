@@ -15,11 +15,14 @@ set cursorline
 filetype indent on
 set wildmenu
 set lazyredraw
+
 set showmatch
 
 " Search options
 set incsearch
 set hlsearch
+set ignorecase
+set smartcase
 
 " Fold settings
 set foldenable
