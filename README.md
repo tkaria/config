@@ -4,7 +4,7 @@ cd ~;
 git clone git@github.com:tkaria/config.git ./
 ```
 
-Cheatsheet
+# Cheatsheet
 ### Docker 
 Stop all containers
 `docker stop $(docker ps -a -q)`
