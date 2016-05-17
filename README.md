@@ -1,12 +1,13 @@
 Configuration
 
-Clone into home directory to use - will kill existing 
-
+Clone into home directory to use 
 ```
 cd ~;
-copy ./.bash_profile ./.bash_profile.bak
-copy ./.vimrc ./.vimrc.bak
-git clone git@github.com:tkaria/config.git ./
+git clone git@github.com:tkaria/config.git config 
+cp ~/.bash_profile ~/.bash_profile.bak
+cp ~/.vimrc ~/.vimrc.bak
+cp -i ./config/.bash_profile ./
+cp -i ./config/.vimrc ./
 ```
 
 # Cheatsheet
