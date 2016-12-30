@@ -23,37 +23,30 @@ alias du='du -kh'
 alias df='df -kTh'
 alias tree='tree -Csuh'
 
-# SSH settings
 #SSH_ENV="$HOME/.ssh/environment"
-SSHAGENT=/usr/bin/ssh-agent
-SSHAGENTARGS="-s"
-if [ -z "$SSH_AUTH_SOCK" -a -x "$SSHAGENT" ]; then
-	eval `$SSHAGENT $SSHAGENTARGS`
-	trap "kill $SSH_AGENT_PID" 0
-fi
+#
+#function start_agent {
+  #echo "Initialising new SSH agent..."
+  #/usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+  #echo succeeded
+  #chmod 600 "${SSH_ENV}"
+  #. "${SSH_ENV}" > /dev/null
+  #/usr/bin/ssh-add;
+#}
+#
+## Source SSH settings, if applicable
+#
+#if [ -f "${SSH_ENV}" ]; then
+  #. "${SSH_ENV}" > /dev/null
+  ##ps ${SSH_AGENT_PID} doesn't work under cywgin
+  #ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+      #start_agent;
+  #}
+#else
+  #start_agent;
+#fi
 
-function start_agent {
-     echo "Initialising new SSH agent..."
-     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
-     echo succeeded
-     chmod 600 "${SSH_ENV}"
-     . "${SSH_ENV}" > /dev/null
-     /usr/bin/ssh-add;
-}
-
-# Source SSH settings, if applicable
-
-if [ -f "${SSH_ENV}" ]; then
-     . "${SSH_ENV}" > /dev/null
-     #ps ${SSH_AGENT_PID} doesn't work under cywgin
-     ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
-         start_agent;
-     }
-else
-     start_agent;
-fi
-
-# Functions
+# Change window title if xterm
 function wtitle {
     if [ "$TERM" == "xterm" ] ; then
     # Remove the old title string in the PS1, if one is already set.
